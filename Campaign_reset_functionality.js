@@ -1,10 +1,15 @@
-function resetLocalStorage(campaignId, resetTime) {
-    var localStorageObj = "";  
+function resetLocalStorage(campaignId, resetTimeDays, resetTimeHours, resetTimeMinutes) {
+    var localStorageObj = "";
     for(var item in localStorage) {
-        if(item.match(campaignId)) { 
+        if(item.match(campaignId)) {
             localStorageObj = item;
         }
     }
+    var resetTimeDaysMS = resetTimeDays * 60000 * 60 * 24;
+    var resetTimeHoursMS = resetTimeHours * 60000 * 60;
+    var resetTimeMinutesMS = resetTimeMinutes * 60000;
+    var resetTime = resetTimeDaysMS + resetTimeHoursMS + resetTimeMinutesMS;
+
     var localStorageArray = localStorage.getItem(localStorageObj).split('/');
     localStorageArray.splice(5, 2, "", Date.now() + resetTime);
     localStorageStr = localStorageArray.join('/');
@@ -23,10 +28,10 @@ usabilla_live("setEventCallback", function(category, action, label, value) {
         try {
             var data = JSON.parse(event.data);
             // On the final page
-            if (data.type === "pageSwitch" && data.end) {                
+            if (data.type === "pageSwitch" && data.end) {
                 if (data.data.checkbox == "true") { //Change "checkbox" and true" to your "remind me later" value as specified in the Usabilla interface
                     setTimeout(function() {
-                        resetLocalStorage(label, 172800);
+                        resetLocalStorage(label, 0, 0, 0);
                     }, 300);
                 }
             }
